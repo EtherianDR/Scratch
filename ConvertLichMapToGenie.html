@@ -1,0 +1,85 @@
+<html>
+	<head>
+		<title>Convert Lich json map to XML</title>
+	</head>
+	<body>
+		<textarea id="output" style="width: 100%; height: 50%"></textarea>
+		<script src="lichmap.js"></script>
+		<script type="text/javascript">
+			const xmlDoc = document.implementation.createDocument("", "zone", null);
+			const zone = xmlDoc.querySelector("zone");
+			zone.setAttribute("name", "Lich World Map");
+			zone.setAttribute("id", "1000");
+			//mapdata = mapdata.slice(0, 10);
+			mapdata.forEach((room) => {
+				if (room.title != null)
+				{
+					let node = xmlDoc.createElement("node");
+					node.setAttribute("id", room.id);
+
+
+					node.setAttribute("name", room.title[0]);
+					zone.appendChild(node);
+					let position = xmlDoc.createElement("position");
+					position.setAttribute("x", "0");
+					position.setAttribute("y", "0");
+					position.setAttribute("z", "0");
+					node.appendChild(position);
+
+					if (Array.isArray(room.description)) {
+						room.description.forEach((description_text) => {
+							let description = xmlDoc.createElement("description");
+							description.textContent = description_text;
+							node.appendChild(description);
+						});
+					}
+
+					for (const wayto in room.wayto) {
+						let arc = xmlDoc.createElement("arc");
+
+						let exit = room.wayto[wayto];
+						if (!exit)
+							continue;
+						
+						switch(exit.toLowerCase()) {
+							case "n":
+								exit = "north";
+								break;
+							case "s":
+								exit = "south";
+								break;
+							case "e":
+								exit = "east";
+								break;
+							case "w":
+								exit = "west";
+								break;
+							case "nw":
+								exit = "northwest";
+								break;
+							case "ne":
+								exit = "northeast";
+								break;
+							case "sw":
+								exit = "southwest";
+								break;
+							case "se":
+								exit = "southeast";
+								break;
+						}
+						
+						let move = exit;
+						let destination = wayto;
+
+						arc.setAttribute("exit", exit);
+						arc.setAttribute("move", move);
+						arc.setAttribute("destination", destination);
+						node.appendChild(arc);
+					}
+				}
+			});
+			let output = new XMLSerializer().serializeToString(xmlDoc.documentElement);
+			document.getElementById("output").innerText = output;
+		</script>
+	</body>
+</html>
