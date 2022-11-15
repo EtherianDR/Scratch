@@ -8,24 +8,35 @@
 		<script type="text/javascript">
 			const xmlDoc = document.implementation.createDocument("", "zone", null);
 			const zone = xmlDoc.querySelector("zone");
+			let offset = 20;
+			let x = offset;
+			let y = offset;
+			let max_x = 500;
 			zone.setAttribute("name", "Lich World Map");
 			zone.setAttribute("id", "1000");
 			//mapdata = mapdata.slice(0, 10);
 			mapdata.forEach((room) => {
 				if (room.title != null)
 				{
+		
 					let node = xmlDoc.createElement("node");
 					node.setAttribute("id", room.id);
-
-
-					node.setAttribute("name", room.title[0]);
+					node.setAttribute("note", room.id);
+					node.setAttribute("name", room.title[0].replace("[[","").replace("]]",""));
 					zone.appendChild(node);
 					let position = xmlDoc.createElement("position");
-					position.setAttribute("x", "0");
-					position.setAttribute("y", "0");
+					position.setAttribute("x", x);
+					position.setAttribute("y", y);
 					position.setAttribute("z", "0");
 					node.appendChild(position);
 
+					x += offset;
+					if (x > max_x)
+					{
+						x = offset;
+						y += offset;
+					}
+					
 					if (Array.isArray(room.description)) {
 						room.description.forEach((description_text) => {
 							let description = xmlDoc.createElement("description");
